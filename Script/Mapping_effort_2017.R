@@ -23,12 +23,11 @@ CellstoEEZ<-read.csv("Data/Cells_LatLon_EEZ.csv")
  
 #TaxFG<-read.csv("C:/Users/yannickr/OneDrive - University of Tasmania/Collaborations/Reg/TaxonUsedDesc.csv")
 TaxFG<-read.csv("Data/TaxonUsedDesc.csv")
-# 
-# 
+
 # #setwd("C:/Users/yannickr/OneDrive - University of Tasmania/FishMip/Effort")
 # #CellList<-read.csv("YannickCells.csv")
-# CellList<-read.csv("Data/YannickCells.csv")
-# 
+CellList<-read.csv("Data/YannickCells.csv")
+
 # WorldEEZ<-read.csv("C:/Users/yannickr/OneDrive - University of Tasmania/Collaborations/Reg/WorldEEZ.csv")
 # # adding the SAUP
 # {
@@ -147,7 +146,7 @@ for (y in c(1980:1991)){
   Catch$Family[Catch$GearCode %in% c("OT","GU","MB","Multiple")]<-"OT"
   Catch$Family[is.na( Catch$Family)]<-"OT"
   
-  Catch$FG<-TaxFG$Descript[match(Catch$Taxonkey,TaxFG$Taxonkey,nomatch=NA,incomparables = NULL)]
+  Catch$FG<-TaxFG$Descript[match(Catch$Taxonkey,TaxFG$TaxonKey,nomatch=NA,incomparables = NULL)]
   if(length(Catch$Taxonkey[is.na(Catch$FG)])!=0){message (paste0( "Error with functional groups, ",y)  )  } #0 good
 
 
