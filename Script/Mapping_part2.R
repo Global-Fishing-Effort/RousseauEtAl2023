@@ -1,9 +1,9 @@
 # Post mapping fishingmip.
-setwd("C:/Users/yannickr/OneDrive - University of Tasmania/FishMip/")
-assoc<-read.csv("Effort/Final_DataStudyFAO_AllGears_wCode.csv")
-realEffort<-read.csv("../FAO_Work_2020/Final_DataStudyFAO_AllGears_V5.csv")
-Cells<-read.csv("C:/Users/yannickr/OneDrive - University of Tasmania/Collaborations/Reg/Cells_LatLon_EEZ.csv")
-Missingvals<-read.csv("Effort/Missing_Effort/Missing_all.csv")
+#setwd("C:/Users/yannickr/OneDrive - University of Tasmania/FishMip/")
+assoc<-read.csv("Data/Final_DataStudyFAO_AllGears_wCode.csv")
+realEffort<-read.csv("Data/Final_DataStudyFAO_AllGears_V5.csv")
+Cells<-read.csv("Data/Cells_LatLon_EEZ.csv")
+Missingvals<-read.csv("Data/Missing_all.csv")
 
 gc()
 # for (y in c(2017:2011))
@@ -11,7 +11,8 @@ gc()
   
   {
 
-path<-file.path(paste0("D:/Effort_2017/Premapped/premapped_",y,".csv"))
+#path<-file.path(paste0("D:/Effort_2017/Premapped/premapped_",y,".csv"))
+path<-file.path(paste0("/rd/gem/private/users/yannickr/effort_premapped/premapped_",y,".csv"))
 effort<-read.csv(path)
 
 
