@@ -424,7 +424,7 @@ for (y in c(1980:1991)){
 
   ListCountriesNoCatch<-setdiff(unique(EffortY$SAUP),unique(CatchY$SAUP))
   MissingEffort<-subset(EffortY,SAUP %in% ListCountriesNoCatch)
-  path<-file.path(paste0("Missing_Effort/Effort_",y,".csv"))
+  path<-file.path(paste0("/rd/gem/private/users/yannickr/Missing_Effort/Effort_",y,".csv"))
   write.csv(MissingEffort,path)
   EffortY<-subset(EffortY,!SAUP %in% ListCountriesNoCatch)
   
