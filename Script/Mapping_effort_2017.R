@@ -2,6 +2,7 @@
 
 library(ncdf4)
 library(tidyverse)
+library(arrow)
 
 # Part 1: Commented out code below adds Family and Gear Code to the country-level Effort capacity data to join with Catch data.
 # Creates file: "Data/Final_DataStudyFAO_AllGears_wCode.csv"
@@ -106,8 +107,8 @@ for (y in c(1980:1991)){
   val<-paste0("https://data.imas.utas.edu.au/attachments/Watson_Global_Fisheries_2020/Catch",
               yearlow,"_",yearhigh,".csv")
   
-  Catch<-read_csv(val)
-  Catch<-subset(Catch,IYear==y)
+  Catch<- data.table::fread(val) |> as.data.frame()
+  Catch<- subset(Catch,IYear==y)
   
   Catch$SAUP<- Catch$CNumber
   Catch$Year<-Catch$IYear
@@ -146,7 +147,9 @@ for (y in c(1980:1991)){
   Catch$Family[Catch$GearCode %in% c("OT","GU","MB","Multiple")]<-"OT"
   Catch$Family[is.na( Catch$Family)]<-"OT"
   
-  Catch$FG<-TaxFG$Descript[match(Catch$Taxonkey,TaxFG$TaxonKey,nomatch=NA,incomparables = NULL)]
+  
+  
+  Catch$FG<-TaxFG$Descript[match(Catch$Taxonkey,TaxFG$Taxonkey,nomatch=NA,incomparables = NULL)]
   if(length(Catch$Taxonkey[is.na(Catch$FG)])!=0){message (paste0( "Error with functional groups, ",y)  )  } #0 good
 
 
@@ -424,7 +427,7 @@ for (y in c(1980:1991)){
 
   ListCountriesNoCatch<-setdiff(unique(EffortY$SAUP),unique(CatchY$SAUP))
   MissingEffort<-subset(EffortY,SAUP %in% ListCountriesNoCatch)
-  path<-file.path(paste0("/rd/gem/private/users/yannickr/Missing_Effort/Effort_",y,".csv"))
+  path<-file.path(paste0("/rd/gem/private/users/yannickr/Missing_Effort/Effort_",y,".csv")) #this is a potential place to shift files to research portal or to create parquest within project
   write.csv(MissingEffort,path)
   EffortY<-subset(EffortY,!SAUP %in% ListCountriesNoCatch)
   
