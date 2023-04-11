@@ -2,6 +2,9 @@
 
 library(ncdf4)
 library(tidyverse)
+library(foreach)
+library(doParallel)
+library(parallel)
 library(arrow)
 
 # Part 1: Commented out code below adds Family and Gear Code to the country-level Effort capacity data to join with Catch data.
@@ -29,7 +32,7 @@ TaxFG<-read.csv("Data/TaxonUsedDesc.csv")
 # #CellList<-read.csv("YannickCells.csv")
 CellList<-read.csv("Data/YannickCells.csv")
 
-# WorldEEZ<-read.csv("C:/Users/yannickr/OneDrive - University of Tasmania/Collaborations/Reg/WorldEEZ.csv")
+WorldEEZ<-read.csv("C:/Users/yannickr/OneDrive - University of Tasmania/Collaborations/Reg/WorldEEZ.csv")
 # # adding the SAUP
 # {
 #   WorldEEZ$SAUP<-CtoSAUP$SAUP_Country_Nbr[match(WorldEEZ$FAOname,CtoSAUP$Country,nomatch=NA,incomparables = NULL)]
@@ -90,10 +93,15 @@ CellList<-read.csv("Data/YannickCells.csv")
 
 All<-read.csv("Data/Final_DataStudyFAO_AllGears_wCode.csv")
 
+#could speed things up here by running the loop in parallel
+
+cores <- detectCores()
+cluster <- makeCluster(cores[1]-1)
+registerDoParallel(cluster)
 
 #----------------- Part 2:
 
-for (y in c(1980:1991)){
+foreach(y=c(1980:1991)) %dopar% {
 
   
   # Read the Catch, add some elements
@@ -107,8 +115,11 @@ for (y in c(1980:1991)){
   val<-paste0("https://data.imas.utas.edu.au/attachments/Watson_Global_Fisheries_2020/Catch",
               yearlow,"_",yearhigh,".csv")
   
-  Catch<- data.table::fread(val) |> as.data.frame()
-  Catch<- subset(Catch,IYear==y)
+  message("Processing data for ", Y)
+  
+  Catch<- data.table::fread(val) |> as.data.frame() 
+  
+  Catch<- Catch |> filter(IYear == y)
   
   Catch$SAUP<- Catch$CNumber
   Catch$Year<-Catch$IYear
@@ -159,6 +170,8 @@ for (y in c(1980:1991)){
   
   Catch<-aggregate(Catch[c( "ReportedIND" , "IUUIND","DiscardsIND",  "ReportedNIND", "IUUNIND" ,"DiscardsNIND")],
                    by=Catch[c("Cell", "Family","FG", "GearCode","SAUP" )],FUN=sum,na.rm=T )
+
+  
 }
 
 # Yug and USSR.
@@ -930,7 +943,7 @@ rm(list=setdiff(ls(), c("All","CellList","CellstoEEZ","CtoSAUP","SAUPtoC","TaxFG
 gc()
 }
 
-
+stopCluster(cluster)
 
 
 
