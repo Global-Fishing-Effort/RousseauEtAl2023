@@ -32,31 +32,34 @@ TaxFG<-read.csv("Data/TaxonUsedDesc.csv")
 # #CellList<-read.csv("YannickCells.csv")
 CellList<-read.csv("Data/YannickCells.csv")
 
-WorldEEZ<-read.csv("C:/Users/yannickr/OneDrive - University of Tasmania/Collaborations/Reg/WorldEEZ.csv")
+
+All<-read.csv("Data/Final_DataStudyFAO_AllGears_wCode.csv")
+
+WorldEEZ<-read.csv("Data/WorldEEZ.csv")
 # # adding the SAUP
-# {
-#   WorldEEZ$SAUP<-CtoSAUP$SAUP_Country_Nbr[match(WorldEEZ$FAOname,CtoSAUP$Country,nomatch=NA,incomparables = NULL)]
-#   
-#   
-#   WorldEEZ$SAUP[WorldEEZ$FAOname %in% c("Amer Samoa" ,"US (Alaska)" , "N Marianas","US Virgin Is")]<-840 # USA
-#   WorldEEZ$SAUP[WorldEEZ$FAOname %in% c("Channel Is","Br Virgin Is","Cayman Is", "Falkland Is" ,"Pitcairn Is" ,"St Helena"  ,"Turks Caicos", "Br Ind Oc Tr" )]<- 826 #UK
-#   WorldEEZ$SAUP[WorldEEZ$FAOname %in% c( "Macau" )]<- 156 # Macao in China
-#   WorldEEZ$SAUP[WorldEEZ$FAOname %in% c("St Pier Mq",  "Kerguelen Is")]<-250 # France
-#   WorldEEZ$SAUP[WorldEEZ$FAOname %in% c("NethAntilles")]<-528 # Netherlands
-#   WorldEEZ$SAUP[WorldEEZ$FAOname %in% c("Tokelau")]<- 554 #NZ
-#   WorldEEZ$SAUP[WorldEEZ$FAOname %in% c("Serbia Montenegro")]<-892 # Montenegro
-#   WorldEEZ$SAUP[WorldEEZ$FAOname %in% c("Gaza Strip")]<-376 # Israel
-#   WorldEEZ$SAUP[WorldEEZ$FAOname %in% c("Norfolk I." )]<-36 # Australia
-#   WorldEEZ$SAUP[WorldEEZ$FAOname %in% c("West Sahara")]<-504 # Morocco
-#   WorldEEZ$SAUP[WorldEEZ$FAOname %in% c("Svalbard Is")]<-578 # Norway
-#   WorldEEZ$SAUP[WorldEEZ$FAOname %in% c(  "Faeroe Is")]<-234 
-#   WorldEEZ$SAUP[WorldEEZ$FAOname %in% c( "St Kitts Nev" )]<-659
-#   WorldEEZ$SAUP[WorldEEZ$FAOname %in% c( "Fr Guiana" )]<- 254
-#   WorldEEZ$SAUP[WorldEEZ$FAOname %in% c( "Fr Polynesia"   )]<-258 
-#   WorldEEZ$SAUP[WorldEEZ$FAOname %in% c( "Cook Is." )]<-184
-#   WorldEEZ$SAUP[WorldEEZ$FAOname %in% c( "Wallis Fut I" )]<-876
-#   unique(WorldEEZ$FAOname[!WorldEEZ$SAUP %in% All$SAUP]) # only the high seas.
-# }
+{
+  WorldEEZ$SAUP<-CtoSAUP$SAUP_Country_Nbr[match(WorldEEZ$FAOname,CtoSAUP$Country,nomatch=NA,incomparables = NULL)]
+
+
+  WorldEEZ$SAUP[WorldEEZ$FAOname %in% c("Amer Samoa" ,"US (Alaska)" , "N Marianas","US Virgin Is")]<-840 # USA
+  WorldEEZ$SAUP[WorldEEZ$FAOname %in% c("Channel Is","Br Virgin Is","Cayman Is", "Falkland Is" ,"Pitcairn Is" ,"St Helena"  ,"Turks Caicos", "Br Ind Oc Tr" )]<- 826 #UK
+  WorldEEZ$SAUP[WorldEEZ$FAOname %in% c( "Macau" )]<- 156 # Macao in China
+  WorldEEZ$SAUP[WorldEEZ$FAOname %in% c("St Pier Mq",  "Kerguelen Is")]<-250 # France
+  WorldEEZ$SAUP[WorldEEZ$FAOname %in% c("NethAntilles")]<-528 # Netherlands
+  WorldEEZ$SAUP[WorldEEZ$FAOname %in% c("Tokelau")]<- 554 #NZ
+  WorldEEZ$SAUP[WorldEEZ$FAOname %in% c("Serbia Montenegro")]<-892 # Montenegro
+  WorldEEZ$SAUP[WorldEEZ$FAOname %in% c("Gaza Strip")]<-376 # Israel
+  WorldEEZ$SAUP[WorldEEZ$FAOname %in% c("Norfolk I." )]<-36 # Australia
+  WorldEEZ$SAUP[WorldEEZ$FAOname %in% c("West Sahara")]<-504 # Morocco
+  WorldEEZ$SAUP[WorldEEZ$FAOname %in% c("Svalbard Is")]<-578 # Norway
+  WorldEEZ$SAUP[WorldEEZ$FAOname %in% c(  "Faeroe Is")]<-234
+  WorldEEZ$SAUP[WorldEEZ$FAOname %in% c( "St Kitts Nev" )]<-659
+  WorldEEZ$SAUP[WorldEEZ$FAOname %in% c( "Fr Guiana" )]<- 254
+  WorldEEZ$SAUP[WorldEEZ$FAOname %in% c( "Fr Polynesia"   )]<-258
+  WorldEEZ$SAUP[WorldEEZ$FAOname %in% c( "Cook Is." )]<-184
+  WorldEEZ$SAUP[WorldEEZ$FAOname %in% c( "Wallis Fut I" )]<-876
+  unique(WorldEEZ$FAOname[!WorldEEZ$SAUP %in% All$SAUP]) # only the high seas. ###flagging not only the high seas now
+}
 # 
 # # adding a "Coastal" twinge to cellist
 # {
@@ -91,12 +94,12 @@ WorldEEZ<-read.csv("C:/Users/yannickr/OneDrive - University of Tasmania/Collabor
 # All$Code<-row.names(All)
 # write.csv(All,"Final_DataStudyFAO_AllGears_wCode.csv")
 
-All<-read.csv("Data/Final_DataStudyFAO_AllGears_wCode.csv")
+
 
 #could speed things up here by running the loop in parallel
 
-cores <- detectCores()
-cluster <- makeCluster(cores[1]-1)
+cores <- detectCores()-1
+cluster <- makeCluster(cores)
 registerDoParallel(cluster)
 
 #----------------- Part 2:
@@ -115,7 +118,7 @@ foreach(y=c(1980:1991)) %dopar% {
   val<-paste0("https://data.imas.utas.edu.au/attachments/Watson_Global_Fisheries_2020/Catch",
               yearlow,"_",yearhigh,".csv")
   
-  message("Processing data for ", Y)
+  message("Processing data for ", y)
   
   Catch<- data.table::fread(val) |> as.data.frame() 
   
