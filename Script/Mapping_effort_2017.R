@@ -934,7 +934,7 @@ rm(SeparatedEventsY1,SeparatedEventsY2,SeparatedEventsY3,SeparatedEventsY4,
 
 
 # path<-file.path(paste0("C:/Users/yannickr/OneDrive - University of Tasmania/FishMip/Effort/Premapped/premapped_",y,".csv"))
-path<-file.path(paste0("Output/Premapped/premapped_",y,".csv"))
+path<-file.path(sprintf(here::here("Output/Premapped/premapped_%s.csv"),y))
 
 write.csv(SeparatedEventsY,path)
 
@@ -965,7 +965,7 @@ stopCluster(cluster)
 
 
 
-# Comments YR:
-# to fix: Curacao doesn't have an EEZ in World EEZ file
+# Comments YR/RC:
+# to fix: Curacao, Monaco, Aruba, doesn't have an EEZ in World EEZ file
 # 1988-1990, pbm yug/russia. to check
 
