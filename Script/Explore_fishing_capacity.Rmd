@@ -6,6 +6,8 @@ output:
   github_document:
     toc: true
     html_preview: false
+editor_options: 
+  chunk_output_type: console
 ---
 
 ## Access data
@@ -13,12 +15,14 @@ output:
 First, read in Rousseau et al. 2023 country-level data from  the IMAS Data Portal:
 
 ```{r}
+
+rm(list = ls())
+
 library(shiny)
 library(plotly)
 library(DT)
 library(tidyverse)
 library(patchwork)
-
 
 effort<-read_csv(file="https://data.imas.utas.edu.au/attachments/1241a51d-c8c2-4432-aa68-3d2bae142794/CapacityCountryLevel_Detailed.csv")[,-1]
 
@@ -27,6 +31,7 @@ effort<-read_csv(file="https://data.imas.utas.edu.au/attachments/1241a51d-c8c2-4
 effort$Country<-as.factor(effort$Country)
 effort$Sector<-as.factor(effort$Sector)
 effort$Gear<-as.factor(effort$Gear)
+
 ```
 
 ## Explore Data
@@ -34,40 +39,39 @@ effort$Gear<-as.factor(effort$Gear)
 For each country you can check to see the fraction of the time series that are empirical data and the fraction estimated by GAM. This is specified as either "Data" or GAM under the column "MethodNV" for each row of data.
 
 ```{r, echo=FALSE}
-#  filtered_data<-subset(effort,
+
+# filtered_data<-subset(effort,
 #        Country %in% "GBR" & Sector %in% "I" & Gear %in% "Trawl_Bottom")
-#  
+# 
 #  p1 <- ggplot(filtered_data, aes_string(x="Year", y="NV",colour="MethodNV")) +
 #    geom_point(alpha=0.5) +
-#    facet_wrap(~Length_Category,nrow =1)
+#    facet_wrap(~Length_Category,nrow =1)+
 #    theme_minimal() +
 #    ylab("Number of vessels")
-#    
-#    
-#  
-#  p2 <-ggplot(filtered_data, aes_string(x="Year", y="GT",colour="MethodGT")) +
-#    geom_point(alpha=0.5) +
-#    facet_wrap(~Length_Category,nrow =1)
-#    theme_minimal() +
-#    ylab("Gross Tonnage")
-#    
-#  
-#   p3 <-ggplot(filtered_data, aes_string(x="Year", y="P",colour="MethodP")) +
-#    geom_point(alpha=0.5) +
-#    facet_wrap(~Length_Category,nrow =1)
-#    theme_minimal() +
-#    ylab("Power")
-#    
-#    p1 /p2 / p3
-#  
-#  print(filtered_data)
 # 
+# p2 <-ggplot(filtered_data, aes_string(x="Year", y="GT",colour="MethodGT")) +
+#  geom_point(alpha=0.5) +
+#  facet_wrap(~Length_Category,nrow =1)+
+#  theme_minimal() +
+#  ylab("Gross Tonnage")
+# 
+# p3 <-ggplot(filtered_data, aes_string(x="Year", y="P",colour="MethodP")) +
+#  geom_point(alpha=0.5) +
+#  facet_wrap(~Length_Category,nrow =1)+
+#  theme_minimal() +
+#  ylab("Power")
+# 
+# p1 /p2 / p3
+# 
+# print(filtered_data)
+
 
 ```
 
 ####### Shiny App
 
 ```{r, echo=FALSE}
+
 ui <- fluidPage(
   sidebarLayout(
     sidebarPanel(
@@ -145,13 +149,23 @@ shinyApp(ui = ui, server = server)
 
 Add to above:  total relative error on each plot.
 
-Calculate total relative error  across all years: sum (1 - ratio of predicted/observed) for Number of Vessels, Gross Tonnage, and Power.
+Calculate total relative error across all years: sum (1 - ratio of predicted/observed) for Number of Vessels, Gross Tonnage, and Power.
 
 ```{r}
-#multimodel mean & sd
-rel_effort_error<-effort %>% group_by(Region, Country,Sector,Gear, Length_Category) %>%
-  summarise(total_errNV = sum(NVerr), total_errGT = sum(GTerr),total_errP=sum(Perr),mean_errNV = mean(NVerr), mean_errGT = mean(GTerr),mean_errP=mean(Perr))
+
+# multimodel mean & sd
+
+rel_effort_error<-effort %>% 
+  group_by(Region, Country, Sector, Gear, Length_Category) %>%
+  summarise(total_errNV = sum(NVerr), 
+            total_errGT = sum(GTerr),
+            total_errP = sum(Perr),
+            mean_errNV = mean(NVerr), 
+            mean_errGT = mean(GTerr),
+            mean_errP = mean(Perr))
+
 print(rel_effort_error)
+
 ```
 
 Create Plots for Mean Relative Error across all years
@@ -159,48 +173,61 @@ Create Plots for Mean Relative Error across all years
 ```{r}
 
 filtered_data<-subset(rel_effort_error, Sector %in% "UP") # I, UP, or APW
+
 library(viridis)
 
 p1<-ggplot(filtered_data, aes(x=Gear, y=Country, fill = mean_errNV)) +
   geom_tile(color="white", size=0.1) +
-  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1,size=6),axis.text.y = element_text(size=3)
-        ,strip.text.y = element_blank()) +  #remove facet bar on y
-scale_fill_viridis(name="Mean Relative Error") +
-#scale_fill_distiller(palette = "YlGnBu") +
+  theme(axis.text.x = element_text(angle = 90, 
+                                   vjust = 0.5, 
+                                   hjust=1,
+                                   size=6),
+        axis.text.y = element_text(size=3),
+        strip.text.y = element_blank()) +  #remove facet bar on y
+  scale_fill_viridis(name="Mean Relative Error") +
   ggtitle("Mean error for Number of Vessels (1-  predicted/observed)") +
   facet_grid(rows = vars(filtered_data$Region),
-             cols = vars(filtered_data$Length_Category), scales = "free", space="free_y") 
+             cols = vars(filtered_data$Length_Category), 
+             scales = "free", 
+             space="free_y") 
 
-  ggsave("heatmap_NVerr_UP.tiff",p1,device = "tiff",width=7,height=10)
-
+  # ggsave("heatmap_NVerr_UP.tiff",p1,device = "tiff",width=7,height=10)
 
 p2<-ggplot(filtered_data, aes(x=Gear, y=Country, fill = mean_errGT)) +
   geom_tile(color="white", size=0.1) +
-  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1,size=6),axis.text.y = element_text(size=3)
-        ,strip.text.y = element_blank()) +  #remove facet bar on y
-scale_fill_viridis(name="Mean Relative Error") +
-#scale_fill_distiller(palette = "YlGnBu") +
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1,size=6),
+        axis.text.y = element_text(size=3), 
+        strip.text.y = element_blank()) +  #remove facet bar on y
+  scale_fill_viridis(name="Mean Relative Error") +
   ggtitle("Mean error for Gross Tonnage (1-  predicted/observed)") +
   facet_grid(rows = vars(filtered_data$Region),
-             cols = vars(filtered_data$Length_Category), scales = "free", space="free_y") 
+             cols = vars(filtered_data$Length_Category), 
+             scales = "free", 
+             space="free_y") 
 
-  ggsave("heatmap_GTerr_UP.tiff",p2,device = "tiff",width=7,height=10)
-
+  # ggsave("heatmap_GTerr_UP.tiff",p2,device = "tiff",width=7,height=10)
   
-  p3<-ggplot(filtered_data, aes(x=Gear, y=Country, fill = mean_errP)) +
+p3<-ggplot(filtered_data, aes(x=Gear, y=Country, fill = mean_errP)) +
   geom_tile(color="white", size=0.1) +
-  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1,size=6),axis.text.y = element_text(size=3)
-        ,strip.text.y = element_blank()) +  #remove facet bar on y
-scale_fill_viridis(name="Mean Relative Error") +
-#scale_fill_distiller(palette = "YlGnBu") +
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1,size=6),
+        axis.text.y = element_text(size=3),
+        strip.text.y = element_blank()) +  #remove facet bar on y
+  scale_fill_viridis(name="Mean Relative Error") +
   ggtitle("Mean error for Power (1-  predicted/observed)") +
   facet_grid(rows = vars(filtered_data$Region),
-             cols = vars(filtered_data$Length_Category), scales = "free", space="free_y") 
+             cols = vars(filtered_data$Length_Category), 
+             scales = "free", 
+             space="free_y") 
 
-  ggsave("heatmap_Perr_UP.tiff",p3,device = "tiff",width=7,height=10)
-
-  
-
+  # ggsave("heatmap_Perr_UP.tiff",p3,device = "tiff",width=7,height=10)
 
 ```
 
+#### CN run shiny app 
+
+```{r}
+
+library(shiny)
+runApp("/home/ubuntu/RousseauEtAl2023/Shinyapp")
+
+```
