@@ -2,7 +2,8 @@
 
 This repository contains code and a shiny app for exploring and plotting the global fishing effort database created using methods described in Rousseau et al. 2023, Scientific Data. The full database is held here: https://doi.org/10.25959/MNGY-0Q43.
 
-There are two parts to this repo:
+There are two parts to this repo:<br>
+
 **1. Exploring country level data:**
 The primary data compilation is by fishing country. 
 To explore country level fishing effort data go to "Explore_fishing_capacity.Rmd"
