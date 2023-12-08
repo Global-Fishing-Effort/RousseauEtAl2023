@@ -16,7 +16,7 @@ There are two parts: Mapping_effort_2017.R and Mapping_part2.R
 
 To use these data, please cite:
 
-Data Paper: Rousseau Y., Blanchard, JL, Novaglio, C, Pinnell, KA, Tuttensor, DT, Watson, RA, Ye, Y. 2023, A database of mapped global fishing activity, 1950-
+Data Paper: Rousseau Y., Blanchard, JL, Novaglio, C, Pinnell, KA, Tittensor, DT, Watson, RA, Ye, Y. 2023, A database of mapped global fishing activity, 1950-
 2017’  Scientific Data. *[awaiting doi]*
 
 And cite data as:
