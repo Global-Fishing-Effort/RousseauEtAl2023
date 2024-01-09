@@ -223,7 +223,9 @@ p3<-ggplot(filtered_data, aes(x=Gear, y=Country, fill = mean_errP)) +
 
 ```
 
-####### Shiny App for Mean relative error
+####### Shiny App 
+
+Plot Mean relative error for number of vessels as per p1 above in Shiny App. Remove faceting.  
 
 ```{r}
 
