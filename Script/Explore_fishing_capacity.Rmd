@@ -222,14 +222,3 @@ p3<-ggplot(filtered_data, aes(x=Gear, y=Country, fill = mean_errP)) +
   # ggsave("heatmap_Perr_UP.tiff",p3,device = "tiff",width=7,height=10)
 
 ```
-
-####### Shiny App 
-
-Plot Mean relative error for number of vessels as per p1 above in Shiny App. Remove faceting.  
-
-```{r}
-
-library(shiny)
-runApp("/home/ubuntu/RousseauEtAl2023/Shinyapp")
-
-```
